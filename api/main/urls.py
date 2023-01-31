@@ -9,7 +9,10 @@ urlpatterns = [
     path('patient-info', views.PatientInfoAPIView.as_view(), name='patient-info'),
     path('patient-info/<int:id>', views.PatientInfoAPIView.as_view(), name='patient-info-get'),
     path('video-to-image', views.VideoToImageAPIView.as_view(), name='video-to-image'),
+    path('resize-images', views.ImageResizeAPIView.as_view(), name='resize-images'),
 ]
+
+
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

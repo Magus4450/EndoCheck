@@ -72,3 +72,12 @@ class VideoToImageSerializer(serializers.Serializer):
         if patient_data.file_type != 'video':
             raise serializers.ValidationError('Patient does not have a video file')
         return value
+
+class ImageResizeSerializer(serializers.Serializer):
+    patient_id  = serializers.IntegerField()
+
+    def validate_patient_id(self, value):
+        
+        if not PatientInfo.objects.filter(id=value).exists():
+            raise serializers.ValidationError('Patient does not exist')
+        return value

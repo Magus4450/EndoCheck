@@ -29,9 +29,6 @@ def convert_video_to_image(video_path:str):
     count = 0
 
     while success:
-        # Convert to size 224x224
-        image = cv2.resize(image, (224, 224))
-
         path = os.path.join(preprocess_file_path, f"{count}.jpg")
         print(path)
         cv2.imwrite(path, image)     # save frame as JPEG file
