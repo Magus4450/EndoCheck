@@ -1,3 +1,5 @@
+
+
 class_bin = ['Normal', 'Pathological']
 classes_multi = ['Ampulla of vater',
     'Angiectasia',

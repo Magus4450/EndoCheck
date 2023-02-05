@@ -12,6 +12,7 @@ urlpatterns = [
     path('resize-images', views.ImageResizeAPIView.as_view(), name='resize-images'),
     path('test', views.test, name='test'),
     path('test-model', views.test_model, name='test_model'),
+    path('predict', views.PredictAPIView.as_view(), name='predict'),
 ]
 
 

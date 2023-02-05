@@ -31,14 +31,46 @@ def test_model(request):
     rnp = ResNetPredictor(
         model_weights_path=model_weight_path,
         data_loader=dl)
-    pred_class, pred_proba = rnp.predict()
+    rnp._get_gradcam()
     
 
     return Response({
-        'pred_class': pred_class,
-        'pred_proba': pred_proba
+        'pred_class': '1',
+        'pred_proba': 'pred_proba'
     }, 200)
 
+class PredictAPIView(generics.GenericAPIView):
+    serializer_class = serializers.PredictSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        patient_id = serializer.validated_data['patient_id']
+
+        patient_data = PatientInfo.objects.get(id=patient_id)
+
+        preprocessed_file_path = patient_data.preprocessed_file_path
+
+        model_weight_path = 'static/weights/resnet_multi_100_dropout1.pth'
+        dl = DataLoader(preprocessed_file_path, batch_size = 32, is_folder=True)
+
+        rnp = ResNetPredictor(
+            model_weights_path=model_weight_path,
+            data_loader=dl)
+        # rnp.predict()
+        rnp.get_gradcam()
+
+        # patient_data.predicted_class = rnp.predicted_class
+        # patient_data.predicted_probas = rnp.predicted_probas
+        # patient_data.grad_images = rnp.gradcam_images
+        # patient_data.save()
+
+        return Response({
+            'test': 'test'
+            # 'pred_class': rnp.predicted_class,
+            # 'pred_proba': rnp.predicted_probas
+        }, 200)
 
 class PatientInfoAPIView(generics.GenericAPIView):
 
@@ -121,8 +153,6 @@ class ImageResizeAPIView(generics.GenericAPIView):
 
 
     
-
-
 
 
 

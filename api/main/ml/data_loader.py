@@ -18,7 +18,7 @@ class DataLoader:
             transforms.ToTensor(),
         ])
     
-    def __iter__(self):
+    def __iter__(self, for_grad:bool = False):
         if self.is_folder:
             batch_size = 0
             batch = None
@@ -27,6 +27,9 @@ class DataLoader:
                 image = imread(image_path)
                 image = self.transform(image)
                 image = image.unsqueeze(0)
+                if for_grad:
+                    yield image
+                    continue
                 if batch is None:
                     batch = image
                 else:
@@ -51,6 +54,9 @@ class DataLoader:
             return len(os.listdir(self.data_path))
         else:
             return 1
+    
+    def __call__(self, for_grad:bool = False):
+        return self.__iter__(for_grad=for_grad)
 
 
 

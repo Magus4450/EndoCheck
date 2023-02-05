@@ -81,3 +81,13 @@ class ImageResizeSerializer(serializers.Serializer):
         if not PatientInfo.objects.filter(id=value).exists():
             raise serializers.ValidationError('Patient does not exist')
         return value
+
+class PredictSerializer(serializers.Serializer):
+    patient_id  = serializers.IntegerField()
+
+    def validate_patient_id(self, value):
+        
+        if not PatientInfo.objects.filter(id=value).exists():
+            raise serializers.ValidationError('Patient does not exist')
+        return value
+    
