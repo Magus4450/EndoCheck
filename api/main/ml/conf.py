@@ -30,3 +30,19 @@ samples_per_class = {
     'Reduced mucosal view': 848,
     'Ulcer': 597
 }
+mapping = {
+        'Ampulla of vater': "Normal", 
+        'Angiectasia': "Pathological", 
+        'Blood - fresh': "Pathological", 
+        'Blood - hematin': "Pathological", 
+        'Erosion': "Pathological", 
+        'Erythema': "Pathological", 
+        'Foreign body': "Pathological", 
+        'Ileocecal valve': "Normal", 
+        'Lymphangiectasia': "Pathological", 
+        'Normal clean mucosa': "Normal", 
+        'Polyp': "Pathological", 
+        'Pylorus': "Normal", 
+        'Reduced mucosal view': "Normal", 
+        'Ulcer': "Pathological"
+    }

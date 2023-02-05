@@ -1,10 +1,14 @@
 import os
 
+from django.templatetags.static import static
 from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from . import preprocesing, serializers
+from . import serializers
+from .ml import preprocesing
+from .ml.data_loader import DataLoader
+from .ml.predictor import ResNetPredictor
 from .models import PatientInfo
 
 
@@ -12,6 +16,28 @@ from .models import PatientInfo
 def ping(request):
     return Response({'message': 'pong'}, 200)
 
+@api_view(['GET'])
+def test(request):
+    dl = DataLoader('media/preprocessed/2.mp4', batch_size = 32, is_folder=True)
+    for i in dl:
+        print(i.shape)
+    return Response({'message': 'test'}, 200)
+
+@api_view(['GET'])
+def test_model(request):
+    model_weight_path = 'static/weights/resnet_multi_100_dropout1.pth'
+    dl = DataLoader('media/preprocessed/test2.mp4', batch_size = 32, is_folder=True)
+
+    rnp = ResNetPredictor(
+        model_weights_path=model_weight_path,
+        data_loader=dl)
+    pred_class, pred_proba = rnp.predict()
+    
+
+    return Response({
+        'pred_class': pred_class,
+        'pred_proba': pred_proba
+    }, 200)
 
 
 class PatientInfoAPIView(generics.GenericAPIView):
@@ -95,6 +121,8 @@ class ImageResizeAPIView(generics.GenericAPIView):
 
 
     
+
+
 
 
 
