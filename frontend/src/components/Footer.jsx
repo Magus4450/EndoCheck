@@ -1,4 +1,3 @@
-import logo from "../assets/logo.png";
 const Footer = () => {
   return (
     <footer
@@ -7,8 +6,8 @@ const Footer = () => {
     >
       <div className="mx-auto flex max-w-3xl items-center justify-between p-4">
         <div className="flex align-middle sm:items-center sm:justify-between w-full ">
-          <div className="flex justify-center text-teal-600 sm:justify-start">
-            <img src={logo} className="h-10"></img>
+          <div className="flex justify-center gray-500 sm:justify-start text-sm ">
+            <strong>EndoCheck</strong>
           </div>
 
           <p className="text-center text-sm text-gray-500 lg:mt-0 lg:text-right">

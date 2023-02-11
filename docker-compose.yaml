@@ -1,0 +1,16 @@
+services:
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+    command: bash -c "python manage.py runserver 0.0.0.0:8000"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+    command: bash -c "npm run dev"
