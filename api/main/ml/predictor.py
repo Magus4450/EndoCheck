@@ -82,20 +82,27 @@ class ResNetPredictor:
 
 
     def get_gradcam(self):
-        base_name = self.data_loader.data_path.split('/')[-1]
+        
+        base_name = os.path.basename(self.data_loader.data_path)
         grad_out_base_path = os.path.join(self.grad_cam_path, base_name)
         overlayed_out_base_path = os.path.join(self.overlayed_img_path, base_name)
         if not os.path.exists(grad_out_base_path):
             os.mkdir(grad_out_base_path)
         if not os.path.exists(overlayed_out_base_path):
             os.mkdir(overlayed_out_base_path)
-        
+        print(grad_out_base_path, overlayed_out_base_path)
         for i ,image in enumerate(self.data_loader(for_grad=True)):
             grad_final_path = os.path.join(grad_out_base_path, f'{i}.png')
             overlayed_final_path = os.path.join(overlayed_out_base_path, f'{i}.png')
+            # if not self.data_loader.is_folder:
+            #     grad_final_path = os.path.join(grad_out_base_path, f'{self.data_loader.data_path.split("/")[-1]}')
+            #     overlayed_final_path = os.path.join(overlayed_out_base_path, f'{self.data_loader.data_path.split("/")[-1]}')
+            # print(grad_final_path, overlayed_final_path)
             img, heatmap = self._get_one_gradcam(image) 
             self._save_grad_image(heatmap, grad_final_path)
             self._save_overlayed_image(img, heatmap, overlayed_final_path)
+
+        return grad_out_base_path, overlayed_out_base_path
             
 
 

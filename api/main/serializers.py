@@ -36,8 +36,6 @@ class PatientInfoSerializer(serializers.ModelSerializer):
         return p_info
 
     def validate(self, attrs):
-        print(attrs['file'].content_type)
-        print(attrs['file'].name)
         ft = attrs['file'].content_type.split('/')[0]
         extension = attrs['file'].content_type.split('/')[-1]
 

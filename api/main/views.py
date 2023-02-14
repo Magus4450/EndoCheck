@@ -26,8 +26,6 @@ def ping(request):
 @api_view(['GET'])
 def test(request):
     dl = DataLoader('media/preprocessed/2.mp4', batch_size = 32, is_folder=True)
-    for i in dl:
-        print(i.shape)
     return Response({'message': 'test'}, 200)
 
 @api_view(['GET'])
@@ -57,26 +55,32 @@ class PredictAPIView(generics.GenericAPIView):
 
         patient_data = PatientInfo.objects.get(id=patient_id)
 
-        preprocessed_file_path = patient_data.preprocessed_file_path
+        preprocessed_file_path = patient_data.preprocessed_file_path if patient_data.preprocessed_file_path else patient_data.file.path
 
         model_weight_path = 'static/weights/resnet_multi_100_dropout1.pth'
-        dl = DataLoader(preprocessed_file_path, batch_size = 32, is_folder=True)
+        dl = DataLoader(preprocessed_file_path, batch_size = 32, is_folder=patient_data.file_type == 'video')
 
         rnp = ResNetPredictor(
             model_weights_path=model_weight_path,
             data_loader=dl)
-        # rnp.predict()
-        rnp.get_gradcam()
+        predicted_class, predicted_probas = rnp.predict()
+        grad_path, overlayed_path = rnp.get_gradcam()
 
-        # patient_data.predicted_class = rnp.predicted_class
-        # patient_data.predicted_probas = rnp.predicted_probas
-        # patient_data.grad_images = rnp.gradcam_images
-        # patient_data.save()
+        base_path = settings.BASE_DIR
+
+        grad_path = grad_path.replace(base_path, '')
+        overlayed_path = overlayed_path.replace(base_path, '')
+
+
+
+        patient_data.predicted_class = predicted_class
+        patient_data.predicted_probas = predicted_probas
+        patient_data.grad_images = grad_path
+        patient_data.overlayed_images = overlayed_path
+        patient_data.save()
 
         return Response({
-            'test': 'test'
-            # 'pred_class': rnp.predicted_class,
-            # 'pred_proba': rnp.predicted_probas
+            'patient_id': patient_id,
         }, 200)
 
 class PatientInfoAPIView(generics.GenericAPIView):
@@ -84,7 +88,6 @@ class PatientInfoAPIView(generics.GenericAPIView):
     serializer_class = serializers.PatientInfoSerializer
     lookup_field = 'id'
     def post(self, request):
-        print(request.data)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -115,7 +118,6 @@ class VideoToImageAPIView(generics.GenericAPIView):
         patient_data = PatientInfo.objects.get(id=patient_id)
 
         file_path = patient_data.file.path
-        print(file_path)
 
         folder_path, count = preprocesing.convert_video_to_image(file_path)
 
@@ -139,6 +141,9 @@ class ImageResizeAPIView(generics.GenericAPIView):
     
 
         patient_data = PatientInfo.objects.get(id=patient_id)
+        
+        # print all data of query
+        print(patient_data.__dict__)
 
         file_type = patient_data.file_type
 
@@ -188,7 +193,7 @@ class VideoCropAPIView(generics.GenericAPIView):
         
 
         ffmpeg_path = os.path.join(base_path, 'static', 'ffmpeg', 'ffmpeg.exe')
-        subprocess.call([ffmpeg_path, "-i", video_name, "-filter:v", f"crop={w}:{h}:{x}:{y}", "-c:a", "copy",output_name])
+        subprocess.call([ffmpeg_path, "-loglevel", "error",  "-i", video_name, "-filter:v", f"crop={w}:{h}:{x}:{y}", "-c:a", "copy",output_name])
 
         os.remove(video_name)
         shutil.move(output_name, video_name)

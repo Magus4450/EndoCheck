@@ -21,6 +21,7 @@ class PatientInfo(models.Model):
     predicted_probas = models.CharField(max_length=100, blank=True, null=True)
     
     grad_images = models.CharField(max_length=100, blank=True, null=True)
+    overlayed_images = models.CharField(max_length=100, blank=True, null=True)
     
 
 
