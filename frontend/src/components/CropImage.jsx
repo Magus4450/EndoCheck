@@ -39,6 +39,8 @@ const CropImage = ({
   });
   const [currWidth, setCurrWidth] = useState(0);
   const [currHeight, setCurrHeight] = useState(0);
+  const [videoHeight, setVideoHeight] = useState(0);
+  const [videoWidth, setVideoWidth] = useState(0);
 
   useEffect(() => {
     const getFirstFrame = (file) => {
@@ -53,8 +55,12 @@ const CropImage = ({
           video.currentTime = 10;
           video.onseeked = () => {
             const canvas = document.createElement("canvas");
-            canvas.width = video.videoWidth;
+            canvas.width = video.videoWidth; //Actual width of the video
             canvas.height = video.videoHeight;
+            setVideoHeight(video.videoHeight);
+            setVideoWidth(video.videoWidth);
+            console.log(canvas.width, canvas.height);
+            console.log(crop);
             const context = canvas.getContext("2d");
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             setFirstFrame(canvas.toDataURL());
@@ -148,11 +154,16 @@ const CropImage = ({
     e.preventDefault();
 
     if (isVideo) {
-      onReceiveCrop(file, cropDims);
-      // mutate({
-      //   file: file,
-      //   cropDims: cropDims,
-      // });
+      console.log(currHeight, currWidth);
+      const scaleX = videoWidth / currWidth;
+      const scaleY = videoHeight / currHeight;
+      const cropInfo = {
+        x: cropDims.x * scaleX,
+        y: cropDims.y * scaleY,
+        width: cropDims.width * scaleX,
+        height: cropDims.height * scaleY,
+      };
+      onReceiveCrop(file, cropInfo);
     } else {
       getCroppedImg();
 

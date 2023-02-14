@@ -4,6 +4,7 @@ import { useMutation } from "react-query";
 import "../App.css";
 import { imagesResize } from "../services/imagesResize";
 import { patientRegister } from "../services/patientRegister";
+import { predict } from "../services/predict";
 import { videoCrop } from "../services/videoCrop";
 import { videoToImage } from "../services/videoToImage";
 import Loader from "./Loader";
@@ -24,46 +25,51 @@ const Predict = ({
   const [convertedFile, setConvertedFile] = useState(null);
   const [patientId, setPatientId] = useState(null);
   const [predicting, setPredicting] = useState(false);
+  const [predictStatus, setPredictStatus] = useState(0);
 
   const { mutate: mutatePatientInfo, statusPatientInfo } = useMutation(
     patientRegister,
     {
-      onSuccess: (data) => {
-        console.log(data.data);
+      onSuccess: async (data) => {
         setPatientData(data.data);
+        const patientId = data.data["id"];
 
         if (isVideo) {
-          mutateVideoCrop(data.data["id"], cropDims);
-          mutateVideoToImage(data.data["id"]);
+          await mutateVideoCrop.mutateAsync({ patientId, cropDims });
+          setPredictStatus(1);
+          await mutateVideoToImage.mutateAsync(patientId);
         }
-
-        mutateImagesResize(data.data["id"]);
+        setPredictStatus(2);
+        await mutateImagesResize.mutateAsync(patientId);
+        setPredictStatus(3);
+        await mutatePredict.mutateAsync(patientId);
       },
     }
   );
-  const { mutate: mutateVideoCrop, statusVideoCrop } = useMutation(videoCrop, {
+
+  const mutateVideoCrop = useMutation(videoCrop, {
     onSuccess: (data) => {
       console.log(data.data);
     },
   });
 
-  const { mutate: mutateImagesResize, statusImagesResize } = useMutation(
-    imagesResize,
-    {
-      onSuccess: (data) => {
-        console.log(data.data);
-      },
-    }
-  );
+  const mutateImagesResize = useMutation(imagesResize, {
+    onSuccess: (data) => {
+      console.log(data.data);
+    },
+  });
 
-  const { mutate: mutateVideoToImage, statusVideoToImage } = useMutation(
-    videoToImage,
-    {
-      onSuccess: (data) => {
-        console.log(data.data);
-      },
-    }
-  );
+  const mutateVideoToImage = useMutation(videoToImage, {
+    onSuccess: (data) => {
+      console.log(data.data);
+    },
+  });
+
+  const mutatePredict = useMutation(predict, {
+    onSuccess: (data) => {
+      console.log(data.data);
+    },
+  });
   const backButtonHandler = () => {
     setActiveStep(activeStep - 1);
   };
@@ -192,7 +198,13 @@ const Predict = ({
             <div className="flex flex-col align-middle justify-center mt-10 sm:mt-0 w-4/5">
               <div className="shadow sm:rounded-md flex flex-col items-center">
                 <Loader />
-                <div className="pb-40">Sending data to server</div>
+                <div className="pb-40">
+                  {predictStatus === 0 && <>Sending data to server</>}
+                  {predictStatus === 1 && <>Converting video to images</>}
+                  {predictStatus === 2 && isVideo && <>Resizing images</>}
+                  {predictStatus === 2 && !isVideo && <>Resizing the image</>}
+                  {predictStatus === 3 && <>Predicting</>}
+                </div>
               </div>
             </div>
           </div>
