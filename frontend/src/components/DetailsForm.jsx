@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function DetailsForm({
   onReceiveDetails,
@@ -6,14 +6,10 @@ export default function DetailsForm({
   setActiveStep,
   data,
 }) {
-  // const rFirstName = data.firstName || "";
-  // const rLastName = data.lastName || "";
-  // const rAge = data.age || "";
-  // const rFile = data.file || null;
-
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
   const ageRef = useRef(null);
+  const fileRef = useRef(null);
 
   const [firstName, setFirstName] = useState(data.firstName);
   const [lastName, setLastName] = useState(data.lastName);
@@ -28,6 +24,9 @@ export default function DetailsForm({
   const [fileUploaded, setFileUploaded] = useState(data.file ? true : false);
   const [uploadedMedia, setUploadedMedia] = useState(data.file);
 
+  const [mediaWidth, setMediaWidth] = useState(0);
+  const [mediaHeight, setMediaHeight] = useState(0);
+  useEffect(() => {}, [mediaHeight, mediaWidth]);
   const submitHandler = (e) => {
     e.preventDefault();
 
@@ -60,6 +59,8 @@ export default function DetailsForm({
       age: age,
       file: uploadedMedia,
       isVideo: isVideo,
+      mediaWidth: mediaWidth,
+      mediaHeight: mediaHeight,
     };
     if (!formValid) {
       return;
@@ -98,12 +99,6 @@ export default function DetailsForm({
 
   return (
     <div className="mx-auto flex max-w-4xl items-center justify-center p-4">
-      {/* <div className="hidden sm:block" aria-hidden="true">
-        <div className="py-5">
-          <div className="border-t border-gray-200" />
-        </div>
-      </div> */}
-
       <div className="mt-10 sm:mt-0">
         <form>
           <div className="overflow-hidden shadow sm:rounded-md0">
@@ -265,13 +260,13 @@ export default function DetailsForm({
                       </div>
                     ) : (
                       // If file not uploaded
+
                       <div className="flex flex-col align-center w-40">
                         <div className="flex justify-center">
                           {isVideo ? (
-                            <video
-                              // ref={fileInputRef}
-                              src={URL.createObjectURL(uploadedMedia)}
-                            />
+                            <>
+                              <video src={URL.createObjectURL(uploadedMedia)} />
+                            </>
                           ) : (
                             <img
                               src={URL.createObjectURL(uploadedMedia)}
@@ -296,6 +291,13 @@ export default function DetailsForm({
                         </div>
                       </div>
                     )}
+                    {/* {isVideo && (
+                      <video
+                        ref={fileRef}
+                        src={URL.createObjectURL(uploadedMedia)}
+                        className="invisible"
+                      />
+                    )} */}
                   </div>
                 </div>
                 {/* Endoscopic Data End --------------------------------- */}
@@ -315,6 +317,34 @@ export default function DetailsForm({
           </div>
         </form>
       </div>
+      {isVideo && uploadedMedia && (
+        <video
+          ref={fileRef}
+          src={uploadedMedia ? URL.createObjectURL(uploadedMedia) : ""}
+          className="invisible"
+          onLoadedMetadata={() => {
+            setMediaHeight(fileRef.current.mediaHeight);
+            setMediaWidth(fileRef.current.MediaWidth);
+
+            // Change classname to hidden
+            fileRef.current.className = "hidden";
+          }}
+        />
+      )}
+      {!isVideo && uploadedMedia && (
+        <img
+          ref={fileRef}
+          src={uploadedMedia ? URL.createObjectURL(uploadedMedia) : ""}
+          className="invisible"
+          onLoad={() => {
+            setMediaHeight(fileRef.current.mediaHeight);
+            setMediaWidth(fileRef.current.MediaWidth);
+
+            // Change classname to hidden
+            fileRef.current.className = "hidden";
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CropImage from "../components/CropImage";
 import DetailsForm from "../components/DetailsForm";
+import Predict from "../components/Predict";
 import Steps from "../components/Steps";
 const Home = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -9,8 +10,15 @@ const Home = () => {
   const [lastName, setLastName] = useState("");
   const [age, setAge] = useState("");
   const [file, setFile] = useState(null);
+  const [thumbnail, setThumbnail] = useState(null);
   const [isVideo, setIsVideo] = useState(false);
+  const [mediaWidth, setMediaWidth] = useState(0);
+  const [mediaHeight, setMediaHeight] = useState(0);
   const [croppedFile, setCroppedFile] = useState(null);
+  const [cropDims, setCropDims] = useState({});
+
+  const [patientData, setPatientData] = useState({});
+
   const detailsReceiveHandler = ({
     firstName,
     lastName,
@@ -25,9 +33,11 @@ const Home = () => {
     setIsVideo(isVideo);
   };
 
-  const cropReceiveHandler = (file) => {
+  const cropReceiveHandler = (file, cropDims) => {
+    if (isVideo) {
+      setCropDims(cropDims);
+    }
     setCroppedFile(file);
-    console.log(file);
   };
   return (
     <>
@@ -47,6 +57,19 @@ const Home = () => {
           onReceiveCrop={cropReceiveHandler}
           activeStep={activeStep}
           setActiveStep={setActiveStep}
+          setThumbnail={setThumbnail}
+        />
+      )}
+      {activeStep === 2 && (
+        <Predict
+          file={croppedFile}
+          cropDims={cropDims}
+          thumbnail={thumbnail}
+          activeStep={activeStep}
+          setActiveStep={setActiveStep}
+          data={{ firstName, lastName, age, isVideo }}
+          patientData={patientData}
+          setPatientData={setPatientData}
         />
       )}
     </>

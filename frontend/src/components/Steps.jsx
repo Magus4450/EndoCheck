@@ -1,4 +1,8 @@
-import { IdentificationIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import {
+  BeakerIcon,
+  IdentificationIcon,
+  MapPinIcon,
+} from "@heroicons/react/24/outline";
 const Steps = ({ activeStep }) => {
   // const activeStep = 0;
   console.log(activeStep);
@@ -109,9 +113,10 @@ const Steps = ({ activeStep }) => {
           </li>
 
           <li className={`flex items-center justify-center p-4 ${step3}`}>
+            <BeakerIcon className="mr-2 h-7 w-7 flex-shrink-0" />
             <p className="leading-none">
-              <strong className="block font-medium"> Payment </strong>
-              <small className="mt-1"> Show us the money. </small>
+              <strong className="block font-medium"> Predict </strong>
+              <small className="mt-1"> Feed the data </small>
             </p>
           </li>
         </ol>

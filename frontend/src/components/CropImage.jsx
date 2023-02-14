@@ -1,55 +1,44 @@
-import { createFFmpeg } from "@ffmpeg/ffmpeg";
 import { useEffect, useState } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
+import { useMutation } from "react-query";
 import "../App.css";
-
-const ffmpeg = createFFmpeg({
-  log: true,
-});
-
+import { videoCrop } from "../services/videoCrop";
 const CropImage = ({
   file,
   isVideo,
   onReceiveCrop,
   activeStep,
   setActiveStep,
+  setThumbnail,
 }) => {
-  const [ready, setReady] = useState(false);
-  const [croppedVideo, setCroppedVideo] = useState(null);
-
-  const load = async () => {
-    await ffmpeg.load();
-    setReady(true);
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  const cropVideo = async () => {
-    // Write file to memory
-    ffmpeg.FS("writeFile", "inp.mp4", await fetchFile(file));
-
-    // Run the FFMpeg command
-    await ffmpeg.run(
-      "-i",
-      "inp.mp4",
-      "-filter:v",
-      `crop=${crop.width}:${crop.height}:${crop.x}:${crop.y}`,
-      "out.mp4"
-    );
-
-    // Read the Result
-    const data = ffmpeg.FS("readFile", "out.mp4");
-
-    const video = new Blob([data.buffer], { type: "video/mp4" });
-    // Create a URL
-    const url = URL.createObjectURL(video);
-
-    setCroppedVideo(video);
-  };
   const [firstFrame, setFirstFrame] = useState(null);
+  const [src, setSrc] = useState(null);
+  const [croppedImageUrl, setCroppedImageUrl] = useState(null);
+  const [crop, setCrop] = useState({
+    unit: "px",
+    width: 100,
+    aspect: 1 / 1,
+  });
+  const [image, setImage] = useState(null);
+  const [croppedImage, setCroppedImage] = useState(null);
+  const [fileUrl, setFileUrl] = useState(null);
+
+  const [cropDims, setCropDims] = useState({
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  });
+
+  const [croppedVideo, setCroppedVideo] = useState(null);
+  const { mutate, status } = useMutation(videoCrop, {
+    onSuccess: (data) => {
+      setCroppedVideo(data.data);
+    },
+  });
+  const [currWidth, setCurrWidth] = useState(0);
+  const [currHeight, setCurrHeight] = useState(0);
 
   useEffect(() => {
     const getFirstFrame = (file) => {
@@ -69,6 +58,7 @@ const CropImage = ({
             const context = canvas.getContext("2d");
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             setFirstFrame(canvas.toDataURL());
+            setThumbnail(canvas.toDataURL());
           };
         };
       };
@@ -76,7 +66,6 @@ const CropImage = ({
 
     getFirstFrame(file);
   }, [file]);
-  const [src, setSrc] = useState(null);
 
   useEffect(() => {
     if (isVideo) {
@@ -86,33 +75,12 @@ const CropImage = ({
     }
   }, [file, firstFrame, isVideo]);
 
-  const [croppedImageUrl, setCroppedImageUrl] = useState(null);
-  const [crop, setCrop] = useState({
-    unit: "%",
-    width: 30,
-    aspect: 1 / 1,
-  });
-  const [image, setImage] = useState(null);
-  const [croppedImage, setCroppedImage] = useState(null);
-  const [fileUrl, setFileUrl] = useState(null);
-
-  // For video crop
-  const [cropDims, setCropDims] = useState({
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-  });
-
   // If you setState the crop in here you should return false.
   const onImageLoaded = (img) => {
+    // Get current image size
+    setCurrWidth(img.width);
+    setCurrHeight(img.height);
     setImage(img);
-  };
-
-  const onCropComplete = (crop) => {
-    if (!isVideo) {
-      makeClientCrop(crop);
-    }
   };
 
   const onCropChange = (crop, percentCrop) => {
@@ -128,62 +96,67 @@ const CropImage = ({
     setCrop(crop);
   };
 
-  const makeClientCrop = async (crop) => {
-    if (image && crop.width && crop.height) {
-      const cropImgUrl = await getCroppedImg(image, crop, "newFile.jpeg");
-      setCroppedImageUrl(cropImgUrl);
-    }
+  const backButtonHandler = (e) => {
+    e.preventDefault();
+    setActiveStep(activeStep - 1);
   };
 
-  const getCroppedImg = (image, crop, fileName) => {
-    const canvas = document.createElement("canvas");
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-    canvas.width = crop.width;
-    canvas.height = crop.height;
-    const ctx = canvas.getContext("2d");
+  // useEffect(() => {
+  //   if (status == "success") {
+  // onReceiveCrop(croppedVideo);
+  // setActiveStep(activeStep + 1);
+  //   }
+  // }, [croppedVideo]);
 
-    ctx.drawImage(
-      image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
-      0,
-      0,
-      crop.width,
-      crop.height
-    );
+  const getCroppedImg = () => {
+    const image = new Image();
+    image.src = src;
+    image.onload = () => {
+      const canvas = document.createElement("canvas");
+      const scaleX = image.naturalWidth / currWidth;
+      const scaleY = image.naturalHeight / currHeight;
+      canvas.width = crop.width * scaleX;
+      canvas.height = crop.height * scaleY;
+      const ctx = canvas.getContext("2d");
+      // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+      ctx.drawImage(
+        image,
+        crop.x * scaleX,
+        crop.y * scaleY,
+        crop.width * scaleX,
+        crop.height * scaleY,
+        0,
+        0,
+        crop.width * scaleX,
+        crop.height * scaleY
+      );
 
-    return new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (!blob) {
           //reject(new Error('Canvas is empty'));
           console.error("Canvas is empty");
           return;
         }
-        blob.name = fileName;
+        blob.name = "croppedImage.jpeg";
+        console.log(blob);
         setCroppedImage(blob);
-        window.URL.revokeObjectURL(fileUrl);
-        setFileUrl(window.URL.createObjectURL(blob));
-        resolve(fileUrl);
+        onReceiveCrop(blob);
       }, "image/jpeg");
-    });
+    };
   };
-
-  const backButtonHandler = (e) => {
-    e.preventDefault();
-    setActiveStep(activeStep - 1);
-  };
-
-  const nextButtonHandler = (e) => {
+  const nextButtonHandler = async (e) => {
     e.preventDefault();
 
     if (isVideo) {
-      cropVideo();
-      console.log(video);
+      onReceiveCrop(file, cropDims);
+      // mutate({
+      //   file: file,
+      //   cropDims: cropDims,
+      // });
     } else {
-      onReceiveCrop(croppedImage);
+      getCroppedImg();
+
+      console.log(croppedImage);
     }
     setActiveStep(activeStep + 1);
   };
@@ -203,7 +176,7 @@ const CropImage = ({
                     crop={crop}
                     ruleOfThirds
                     onImageLoaded={onImageLoaded}
-                    onComplete={onCropComplete}
+                    // onComplete={onCropComplete}
                     onChange={onCropChange}
                   />
                 </div>
