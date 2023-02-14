@@ -1,5 +1,12 @@
 import os
+import shutil
+import subprocess
+from ast import literal_eval
+from wsgiref.util import FileWrapper
 
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.http import FileResponse, HttpResponse
 from django.templatetags.static import static
 from rest_framework import generics
 from rest_framework.decorators import api_view
@@ -150,9 +157,47 @@ class ImageResizeAPIView(generics.GenericAPIView):
         return Response(serializer.data, 200)
 
 
+class VideoCropAPIView(generics.GenericAPIView):
+
+    serializer_class = serializers.VideoCropSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        patient_id = serializer.validated_data['patient_id']
+
+        base_path = settings.BASE_DIR
+        temp_dir = os.path.join(base_path, 'media', 'tmp')
+
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
+
+        patient_data = PatientInfo.objects.get(id=patient_id)
+        video_name = patient_data.file.path
+        
 
 
-    
+        x = literal_eval(serializer.validated_data['x'])
+        y = literal_eval(serializer.validated_data['y'])
+        w = literal_eval(serializer.validated_data['w'])
+        h = literal_eval(serializer.validated_data['h'])
+        
+        output_name = os.path.join(temp_dir, 'output.mp4')
+
+        
+
+        ffmpeg_path = os.path.join(base_path, 'static', 'ffmpeg', 'ffmpeg.exe')
+        subprocess.call([ffmpeg_path, "-i", video_name, "-filter:v", f"crop={w}:{h}:{x}:{y}", "-c:a", "copy",output_name])
+
+        os.remove(video_name)
+        shutil.move(output_name, video_name)
+        patient_data.file = video_name
+        patient_data.save()
+
+
+        
+        return Response(serializer.data, 200)
 
 
 

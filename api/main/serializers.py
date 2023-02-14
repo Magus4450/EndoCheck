@@ -7,7 +7,7 @@ class PatientInfoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PatientInfo
-        fields = ('id', 'patients_name', 'patients_age', 'file_type', 'file', 'date', 'preprocessed_file_path', 'preprocessed_file_number', 'predicted_class', 'predicted_probas', 'grad_images')
+        fields = ('id', 'first_name', 'last_name', 'patients_age', 'file_type', 'file', 'date', 'preprocessed_file_path', 'preprocessed_file_number', 'predicted_class', 'predicted_probas', 'grad_images')
         extra_kwargs = {
             'id': {'read_only': True},
             'file_type': {'read_only': True},
@@ -21,20 +21,27 @@ class PatientInfoSerializer(serializers.ModelSerializer):
 
     
     def create(self, validated_data):
-
+        f = validated_data['file']
+        if validated_data['extension'] not in f.name:
+            validated_data['file'].name = f.name + validated_data['extension']
         p_info = PatientInfo.objects.create(
-            patients_name=validated_data['patients_name'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
             patients_age=validated_data['patients_age'],
             file_type=validated_data['file_type'],
-            file=validated_data['file']
+            file=f
 
         )
         p_info.save()
         return p_info
 
     def validate(self, attrs):
+        print(attrs['file'].content_type)
+        print(attrs['file'].name)
         ft = attrs['file'].content_type.split('/')[0]
-        extension = attrs['file'].name.split('.')[-1]
+        extension = attrs['file'].content_type.split('/')[-1]
+
+       
 
         if ft not in ['image', 'video']:
             raise serializers.ValidationError('File type not supported')
@@ -46,6 +53,7 @@ class PatientInfoSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Video type not supported')
 
         attrs['file_type'] = ft
+        attrs['extension'] = f'.{extension}'
         return super().validate(attrs)
     
 
@@ -90,4 +98,22 @@ class PredictSerializer(serializers.Serializer):
         if not PatientInfo.objects.filter(id=value).exists():
             raise serializers.ValidationError('Patient does not exist')
         return value
+
+
+class VideoCropSerializer(serializers.Serializer):
+    patient_id = serializers.IntegerField()
+    x = serializers.CharField()
+    y = serializers.CharField()
+    w = serializers.CharField()
+    h = serializers.CharField()
+
+    def validate(self, attrs):
+        
+        if not PatientInfo.objects.filter(id=attrs['patient_id']).exists():
+            raise serializers.ValidationError('Patient does not exist')
+        return super().validate(attrs)
+
+
     
+        
+        return super().validate(attrs)

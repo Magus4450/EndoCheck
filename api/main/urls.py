@@ -13,6 +13,7 @@ urlpatterns = [
     path('test', views.test, name='test'),
     path('test-model', views.test_model, name='test_model'),
     path('predict', views.PredictAPIView.as_view(), name='predict'),
+    path('crop', views.VideoCropAPIView.as_view(), name='crop'),
 ]
 
 

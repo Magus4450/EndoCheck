@@ -7,7 +7,8 @@ CHOICES = (
 
 class PatientInfo(models.Model):
 
-    patients_name = models.CharField(max_length=100, default='Test')
+    first_name = models.CharField(max_length=100, default='Test')
+    last_name = models.CharField(max_length=100, default='Test')
     patients_age = models.IntegerField(default = '999')
     file_type = models.CharField(max_length=100, choices=CHOICES, default='image')
     file = models.FileField(upload_to='raw/', default='media/endoscopy/FDD.png')
@@ -24,4 +25,4 @@ class PatientInfo(models.Model):
 
 
     def __str__(self):
-        return self.patients_name
+        return self.first_name +  " " + self.last_name
