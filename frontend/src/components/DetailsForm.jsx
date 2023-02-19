@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-
+import InputField from "./InputField";
 export default function DetailsForm({
   onReceiveDetails,
   activeStep,
@@ -104,105 +104,34 @@ export default function DetailsForm({
           <div className="overflow-hidden shadow sm:rounded-md0">
             <div className="bg-white px-4 py-5 sm:p-6">
               <div className="grid grid-cols-6 gap-6">
-                {/* First Name -------------------------------------------- */}
-                <div className="col-span-6 sm:col-span-3">
-                  <label
-                    htmlFor="first-name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    First name
-                  </label>
-                  <input
-                    type="text"
-                    name="first-name"
-                    id="first-name"
-                    autoComplete="given-name"
-                    value={firstName}
-                    ref={firstNameRef}
-                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ${
-                      firstNameError ? "border-red-500" : ""
-                    }`}
-                    onKeyDown={(e) => {
-                      setFirstNameError(false);
-                    }}
-                    onChange={(e) => {
-                      setFirstName(e.target.value);
-                    }}
-                  />
-                  {firstNameError && (
-                    <p className="text-red-500 text-xs italic">
-                      Please enter first name.
-                    </p>
-                  )}
-                </div>
-                {/* First Name End ----------------------------------------- */}
+                <InputField
+                  labelName={"First Name"}
+                  type={"text"}
+                  value={firstName}
+                  setValue={setFirstName}
+                  ref={firstNameRef}
+                  error={firstNameError}
+                  setError={setFirstNameError}
+                />
 
-                {/* Last Name -------------------------------------------- */}
-                <div className="col-span-6 sm:col-span-3">
-                  <label
-                    htmlFor="last-name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Last name
-                  </label>
-                  <input
-                    type="text"
-                    name="last-name"
-                    id="last-name"
-                    autoComplete="family-name"
-                    value={lastName}
-                    ref={lastNameRef}
-                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ${
-                      lastNameError ? "border-red-500" : ""
-                    }`}
-                    onKeyDown={(e) => {
-                      setLastNameError(false);
-                    }}
-                    onChange={(e) => {
-                      setLastName(e.target.value);
-                    }}
-                  />
-                  {lastNameError && (
-                    <p className="text-red-500 text-xs italic">
-                      Please enter last name.
-                    </p>
-                  )}
-                </div>
-                {/* Last Name End ----------------------------------------- */}
-
-                {/* Age -------------------------------------------------- */}
-                <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                  <label
-                    htmlFor="region"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Age
-                  </label>
-
-                  <input
-                    type="number"
-                    name="region"
-                    id="region"
-                    autoComplete="address-level1"
-                    value={age}
-                    ref={ageRef}
-                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ${
-                      ageError ? "border-red-500" : ""
-                    }`}
-                    onKeyDown={(e) => {
-                      setAgeError(false);
-                    }}
-                    onChange={(e) => {
-                      setAge(e.target.value);
-                    }}
-                  />
-                  {ageError && (
-                    <p className="text-red-500 text-xs italic">
-                      Please enter a valid age.
-                    </p>
-                  )}
-                </div>
-                {/* Age End ----------------------------------------------- */}
+                <InputField
+                  labelName={"Last Name"}
+                  type={"text"}
+                  value={lastName}
+                  setValue={setLastName}
+                  ref={lastNameRef}
+                  error={lastNameError}
+                  setError={setLastNameError}
+                />
+                <InputField
+                  labelName={"Age"}
+                  type={"number"}
+                  value={age}
+                  setValue={setAge}
+                  ref={ageRef}
+                  error={ageError}
+                  setError={setAgeError}
+                />
 
                 {/* Endoscopic Data -------------------------------------- */}
                 <div className="col-span-6 sm:col-span-6 lg:col-span-6">
@@ -291,13 +220,6 @@ export default function DetailsForm({
                         </div>
                       </div>
                     )}
-                    {/* {isVideo && (
-                      <video
-                        ref={fileRef}
-                        src={URL.createObjectURL(uploadedMedia)}
-                        className="invisible"
-                      />
-                    )} */}
                   </div>
                 </div>
                 {/* Endoscopic Data End --------------------------------- */}

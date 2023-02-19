@@ -9,12 +9,6 @@ const Steps = ({ activeStep }) => {
   const activeColorClass = "bg-gray-50";
   const inactiveColorClass = "bg-white";
 
-  // const [diamond1, setDiamond1] = useState(activeColorClass);
-  // const [diamond2, setDiamond2] = useState(inactiveColorClass);
-  // const [step1, setStep1] = useState(activeColorClass);
-  // const [step2, setStep2] = useState(inactiveColorClass);
-  // const [step3, setStep3] = useState(inactiveColorClass);
-
   let diamond1 = activeColorClass;
   let diamond2 = inactiveColorClass;
   let step1 = activeColorClass;
@@ -41,49 +35,8 @@ const Steps = ({ activeStep }) => {
     step3 = activeColorClass;
   }
 
-  // if (activeStep === 0) {
-  //   setDiamond1(activeColorClass);
-  //   setDiamond2(inactiveColorClass);
-  //   setStep1(activeColorClass);
-  //   setStep2(inactiveColorClass);
-  //   setStep3(inactiveColorClass);
-  // } else if (activeStep === 1) {
-  //   setDiamond1(activeColorClass);
-  //   setDiamond2(activeColorClass);
-  //   setStep1(activeColorClass);
-  //   setStep2(activeColorClass);
-  //   setStep3(inactiveColorClass);
-  // } else if (activeStep === 2) {
-  //   setDiamond1(activeColorClass);
-  //   setDiamond2(activeColorClass);
-  //   setStep1(activeColorClass);
-  //   setStep2(activeColorClass);
-  //   setStep3(activeColorClass);
-  // }
-  // const changeStates = () => {
-  //   if (activeStep === 0) {
-  //     setDiamond1(activeColorClass);
-  //     setDiamond2(inactiveColorClass);
-  //     setStep1(activeColorClass);
-  //     setStep2(inactiveColorClass);
-  //     setStep3(inactiveColorClass);
-  //   } else if (activeStep === 1) {
-  //     setDiamond1(activeColorClass);
-  //     setDiamond2(activeColorClass);
-  //     setStep1(activeColorClass);
-  //     setStep2(activeColorClass);
-  //     setStep3(inactiveColorClass);
-  //   } else if (activeStep === 2) {
-  //     setDiamond1(activeColorClass);
-  //     setDiamond2(activeColorClass);
-  //     setStep1(activeColorClass);
-  //     setStep2(activeColorClass);
-  //     setStep3(activeColorClass);
-  //   }
-
-  //   changeStates();
   return (
-    <div className="mx-auto flex max-w-3xl items-center p-4 justify-center mt-5 ">
+    <div className="mx-auto flex max-w-3xl items-center p-4 justify-center">
       <div>
         <ol className="grid grid-cols-1 divide-x divide-gray-100 overflow-hidden rounded-lg border border-gray-100 text-sm text-gray-500 sm:grid-cols-3">
           <li className={`flex items-center justify-center p-4 ${step1}`}>

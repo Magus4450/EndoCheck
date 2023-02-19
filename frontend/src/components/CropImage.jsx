@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import ReactCrop from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { useMutation } from "react-query";
 import "../App.css";
-import { videoCrop } from "../services/videoCrop";
 const CropImage = ({
   file,
   isVideo,
@@ -14,7 +12,6 @@ const CropImage = ({
 }) => {
   const [firstFrame, setFirstFrame] = useState(null);
   const [src, setSrc] = useState(null);
-  const [croppedImageUrl, setCroppedImageUrl] = useState(null);
   const [crop, setCrop] = useState({
     unit: "px",
     width: 100,
@@ -22,7 +19,6 @@ const CropImage = ({
   });
   const [image, setImage] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
-  const [fileUrl, setFileUrl] = useState(null);
 
   const [cropDims, setCropDims] = useState({
     x: 0,
@@ -32,11 +28,6 @@ const CropImage = ({
   });
 
   const [croppedVideo, setCroppedVideo] = useState(null);
-  const { mutate, status } = useMutation(videoCrop, {
-    onSuccess: (data) => {
-      setCroppedVideo(data.data);
-    },
-  });
   const [currWidth, setCurrWidth] = useState(0);
   const [currHeight, setCurrHeight] = useState(0);
   const [videoHeight, setVideoHeight] = useState(0);

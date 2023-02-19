@@ -7,6 +7,7 @@ import { patientRegister } from "../services/patientRegister";
 import { predict } from "../services/predict";
 import { videoCrop } from "../services/videoCrop";
 import { videoToImage } from "../services/videoToImage";
+import InputField from "./InputField";
 import Loader from "./Loader";
 const Predict = ({
   file,
@@ -22,7 +23,6 @@ const Predict = ({
   const lastName = data.lastName;
   const age = data.age;
   const isVideo = data.isVideo;
-  const [convertedFile, setConvertedFile] = useState(null);
   const [patientId, setPatientId] = useState(null);
   const [predicting, setPredicting] = useState(false);
   const [predictStatus, setPredictStatus] = useState(0);
@@ -94,66 +94,24 @@ const Predict = ({
               <div className="overflow-hidden shadow sm:rounded-md0">
                 <div className="bg-white px-4 py-5 sm:p-6">
                   <div className="grid grid-cols-6 gap-6">
-                    {/* First Name -------------------------------------------- */}
-                    <div className="col-span-6 sm:col-span-3">
-                      <label
-                        htmlFor="first-name"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        First name
-                      </label>
-                      <input
-                        type="text"
-                        name="first-name"
-                        id="first-name"
-                        autoComplete="given-name"
-                        value={firstName}
-                        disabled={true}
-                        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100`}
-                      />
-                    </div>
-                    {/* First Name End ----------------------------------------- */}
-
-                    {/* Last Name -------------------------------------------- */}
-                    <div className="col-span-6 sm:col-span-3">
-                      <label
-                        htmlFor="last-name"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Last name
-                      </label>
-                      <input
-                        type="text"
-                        name="last-name"
-                        id="last-name"
-                        autoComplete="family-name"
-                        value={lastName}
-                        disabled={true}
-                        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100`}
-                      />
-                    </div>
-                    {/* Last Name End ----------------------------------------- */}
-
-                    {/* Age -------------------------------------------------- */}
-                    <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                      <label
-                        htmlFor="region"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        Age
-                      </label>
-
-                      <input
-                        type="number"
-                        name="region"
-                        id="region"
-                        autoComplete="address-level1"
-                        value={age}
-                        disabled={true}
-                        className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-gray-100`}
-                      />
-                    </div>
-                    {/* Age End ----------------------------------------------- */}
+                    <InputField
+                      labelName="First Name"
+                      type={"text"}
+                      value={firstName}
+                      disabled={true}
+                    />
+                    <InputField
+                      labelName="Last Name"
+                      type={"text"}
+                      value={lastName}
+                      disabled={true}
+                    />
+                    <InputField
+                      labelName="Age"
+                      type={"number"}
+                      value={age}
+                      disabled={true}
+                    />
                   </div>
                 </div>
 

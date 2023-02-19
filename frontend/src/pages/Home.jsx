@@ -40,39 +40,41 @@ const Home = () => {
     setCroppedFile(file);
   };
   return (
-    <>
-      <Steps activeStep={activeStep} />
-      {activeStep === 0 && (
-        <DetailsForm
-          onReceiveDetails={detailsReceiveHandler}
-          activeStep={activeStep}
-          setActiveStep={setActiveStep}
-          data={{ firstName, lastName, age, file, isVideo }}
-        />
-      )}
-      {activeStep === 1 && (
-        <CropImage
-          file={file}
-          isVideo={isVideo}
-          onReceiveCrop={cropReceiveHandler}
-          activeStep={activeStep}
-          setActiveStep={setActiveStep}
-          setThumbnail={setThumbnail}
-        />
-      )}
-      {activeStep === 2 && (
-        <Predict
-          file={croppedFile}
-          cropDims={cropDims}
-          thumbnail={thumbnail}
-          activeStep={activeStep}
-          setActiveStep={setActiveStep}
-          data={{ firstName, lastName, age, isVideo }}
-          patientData={patientData}
-          setPatientData={setPatientData}
-        />
-      )}
-    </>
+    <div className="flex flex-col flex-1 justify-center">
+      <div>
+        <Steps activeStep={activeStep} />
+        {activeStep === 0 && (
+          <DetailsForm
+            onReceiveDetails={detailsReceiveHandler}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            data={{ firstName, lastName, age, file, isVideo }}
+          />
+        )}
+        {activeStep === 1 && (
+          <CropImage
+            file={file}
+            isVideo={isVideo}
+            onReceiveCrop={cropReceiveHandler}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            setThumbnail={setThumbnail}
+          />
+        )}
+        {activeStep === 2 && (
+          <Predict
+            file={croppedFile}
+            cropDims={cropDims}
+            thumbnail={thumbnail}
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            data={{ firstName, lastName, age, isVideo }}
+            patientData={patientData}
+            setPatientData={setPatientData}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 
