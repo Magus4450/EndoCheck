@@ -27,7 +27,7 @@ class ResNetPredictor:
         self.classes_multi = cfg.classes_multi
         self.mapping = cfg.mapping
         self.mapping_cls = cfg.mapping_cls
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device(settings.ML_DEVICE)
         self.model, self.grad_model = self._load_models(model_weights_path)
         self.data_loader = data_loader
         self.samples_per_class = cfg.samples_per_class
@@ -35,10 +35,10 @@ class ResNetPredictor:
 
     
     def _configure_paths(self):
-        grad_cam_path = os.path.join(settings.BASE_DIR, 'media', 'grad_cam')
+        grad_cam_path = os.path.join(settings.BASE_DIR, settings.GRAD_CAM_PATH)
         if not os.path.exists(grad_cam_path):
             os.mkdir(grad_cam_path)
-        overlayed_img_path = os.path.join(settings.BASE_DIR, 'media', 'overlayed_images')
+        overlayed_img_path = os.path.join(settings.BASE_DIR, settings.OVERLAYED_PATH)
         if not os.path.exists(overlayed_img_path):
             os.mkdir(overlayed_img_path)
 
@@ -73,7 +73,7 @@ class ResNetPredictor:
         heatmap_j = torch.mean(acts, dim = 1).squeeze()
         heatmap_j_max = heatmap_j.max(axis = 0)[0]
         heatmap_j /= heatmap_j_max
-        heatmap_j = resize(heatmap_j.cpu().numpy(),(224,224),preserve_range=True)
+        heatmap_j = resize(heatmap_j.cpu().numpy(),settings.ML_IMG_SIZE,preserve_range=True)
         heatmap_j = gaussian_filter(heatmap_j, sigma=15)
 
         return image.squeeze().permute(1,2,0).cpu().numpy(), heatmap_j

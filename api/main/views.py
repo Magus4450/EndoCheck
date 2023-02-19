@@ -57,11 +57,10 @@ class PredictAPIView(generics.GenericAPIView):
 
         preprocessed_file_path = patient_data.preprocessed_file_path if patient_data.preprocessed_file_path else patient_data.file.path
 
-        model_weight_path = 'static/weights/resnet_multi_100_dropout1.pth'
-        dl = DataLoader(preprocessed_file_path, batch_size = 32, is_folder=patient_data.file_type == 'video')
+        dl = DataLoader(preprocessed_file_path, batch_size = settings.ML_BATCH_SIZE, is_folder=patient_data.file_type == 'video')
 
         rnp = ResNetPredictor(
-            model_weights_path=model_weight_path,
+            model_weights_path=settings.ML_MODEL_PATH,
             data_loader=dl)
         predicted_class, normal_pred_proba_lst, patho_pred_proba_lst = rnp.predict()
         grad_path, overlayed_path = rnp.get_gradcam()
@@ -85,10 +84,7 @@ class PredictAPIView(generics.GenericAPIView):
         grad_path = grad_path.replace(str(base_path), '')
         overlayed_path = overlayed_path.replace(str(base_path), '')
 
-
  
-        # patient_data.predicted_class = predicted_class
-        # patient_data.predicted_probas = predicted_probas
         patient_data.grad_images = str(grad_path).replace('\\', '/')
         patient_data.overlayed_images = str(overlayed_path).replace('\\', '/')
         patient_data.save()
@@ -214,7 +210,7 @@ class VideoCropAPIView(generics.GenericAPIView):
         patient_id = serializer.validated_data['patient_id']
 
         base_path = settings.BASE_DIR
-        temp_dir = os.path.join(base_path, 'media', 'tmp')
+        temp_dir = os.path.join(base_path, settings.TEMP_PATH)
 
         if not os.path.exists(temp_dir):
             os.makedirs(temp_dir)

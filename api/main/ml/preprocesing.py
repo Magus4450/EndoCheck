@@ -8,14 +8,14 @@ from PIL import Image
 def convert_to_size(image_path: str):
     """Converts image to size 224x224"""
     image = Image.open(image_path)
-    image = image.resize((224, 224))
+    image = image.resize(settings.ML_IMG_SIZE)
     image.save(image_path)
 
 def convert_video_to_image(video_path:str):
 
     BASE_PATH = settings.BASE_DIR
 
-    preprocess_path = os.path.join(BASE_PATH, "media/preprocessed")
+    preprocess_path = os.path.join(BASE_PATH, settings.PREPROCESSED_PATH)
     if not os.path.exists(preprocess_path):
         os.mkdir(preprocess_path)
 
@@ -27,11 +27,10 @@ def convert_video_to_image(video_path:str):
     vidcap = cv2.VideoCapture(video_path)
     success, image = vidcap.read()
     fps = vidcap.get(cv2.CAP_PROP_FPS)
-    required_frame_per_sec = 1
     count = 0
     frame = 0
     while success:
-        if count % (fps / required_frame_per_sec) != 0:
+        if count % (fps / settings.FRAME_PER_SEC) != 0:
             success, image = vidcap.read()
             count += 1
             continue
@@ -41,4 +40,4 @@ def convert_video_to_image(video_path:str):
         success, image = vidcap.read()
         count += 1
 
-    return f"media/preprocessed/{file_name}", frame
+    return f"{settings.PREPROCESSED_PATH}/{file_name}", frame

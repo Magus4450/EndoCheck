@@ -14,7 +14,7 @@ class DataLoader:
         self.data_path = data_path if not is_folder else os.path.join(settings.BASE_DIR, data_path)
         self.transform = transforms.Compose([
             transforms.ToPILImage(),
-            transforms.Resize((224, 224)),
+            transforms.Resize(settings.ML_IMG_SIZE),
             transforms.ToTensor(),
         ])
     
