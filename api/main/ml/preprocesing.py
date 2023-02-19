@@ -26,13 +26,19 @@ def convert_video_to_image(video_path:str):
 
     vidcap = cv2.VideoCapture(video_path)
     success, image = vidcap.read()
+    fps = vidcap.get(cv2.CAP_PROP_FPS)
+    required_frame_per_sec = 1
     count = 0
-
+    frame = 0
     while success:
-        path = os.path.join(preprocess_file_path, f"{count}.jpg")
-        print(path)
+        if count % (fps / required_frame_per_sec) != 0:
+            success, image = vidcap.read()
+            count += 1
+            continue
+        path = os.path.join(preprocess_file_path, f"{frame}.jpg")
+        frame += 1
         cv2.imwrite(path, image)     # save frame as JPEG file
         success, image = vidcap.read()
         count += 1
 
-    return f"media/preprocessed/{file_name}", count
+    return f"media/preprocessed/{file_name}", frame

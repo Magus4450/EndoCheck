@@ -26,6 +26,7 @@ class ResNetPredictor:
         self.class_bin = cfg.class_bin
         self.classes_multi = cfg.classes_multi
         self.mapping = cfg.mapping
+        self.mapping_cls = cfg.mapping_cls
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model, self.grad_model = self._load_models(model_weights_path)
         self.data_loader = data_loader
@@ -83,6 +84,7 @@ class ResNetPredictor:
 
     def get_gradcam(self):
         
+        print('Generating GradCam images')
         base_name = os.path.basename(self.data_loader.data_path)
         grad_out_base_path = os.path.join(self.grad_cam_path, base_name)
         overlayed_out_base_path = os.path.join(self.overlayed_img_path, base_name)
@@ -90,18 +92,14 @@ class ResNetPredictor:
             os.mkdir(grad_out_base_path)
         if not os.path.exists(overlayed_out_base_path):
             os.mkdir(overlayed_out_base_path)
-        print(grad_out_base_path, overlayed_out_base_path)
         for i ,image in enumerate(self.data_loader(for_grad=True)):
             grad_final_path = os.path.join(grad_out_base_path, f'{i}.png')
             overlayed_final_path = os.path.join(overlayed_out_base_path, f'{i}.png')
-            # if not self.data_loader.is_folder:
-            #     grad_final_path = os.path.join(grad_out_base_path, f'{self.data_loader.data_path.split("/")[-1]}')
-            #     overlayed_final_path = os.path.join(overlayed_out_base_path, f'{self.data_loader.data_path.split("/")[-1]}')
-            # print(grad_final_path, overlayed_final_path)
             img, heatmap = self._get_one_gradcam(image) 
             self._save_grad_image(heatmap, grad_final_path)
             self._save_overlayed_image(img, heatmap, overlayed_final_path)
 
+        print('GradCam images generated')
         return grad_out_base_path, overlayed_out_base_path
             
 
@@ -120,7 +118,6 @@ class ResNetPredictor:
         px = 1/plt.rcParams['figure.dpi']  # pixel in inches
         fig = plt.figure(figsize = (291*px,291*px))
         ax = fig.add_subplot(111)
-        print(img.shape, overlay.shape)
         cmap = mpl.cm.get_cmap('jet',256)
         overlay = cmap(overlay,alpha = 0.1)
         ax.imshow(img)
@@ -161,20 +158,35 @@ class ResNetPredictor:
                 pred_class_lst.append(class_)
                 pred_proba_lst.append(proba_lst)
 
-            
-        # Return np array in multi class prediction
-        return np.array(pred_class_lst), np.array(pred_proba_lst)
+        # Seperate predicted probas into normal probas and pathological probas
+        normal_pred_proba_lst = []
+        patho_pred_proba_lst = []
+
+        for proba in pred_proba_lst:
+            normals = []
+            pathos = []
+            for i, p in enumerate(proba):
+                if self.mapping_cls[i] == "Normal":
+                    normals.append(p)
+                else:
+                    pathos.append(p)
+            normal_pred_proba_lst.append(normals)
+            patho_pred_proba_lst.append(pathos)
+                
+
+        return pred_class_lst,normal_pred_proba_lst, patho_pred_proba_lst
     
     def predict(self):
 
-        m_pred_class, m_pred_proba = self._predict()
-
+        print("Predicting...")
+        m_pred_class, normal_pred_proba_lst, patho_pred_proba_lst = self._predict()
+        print("Predicting done")
         b_pred_class = []
 
         for class_ in m_pred_class:
             b_pred_class.append(self.mapping[class_])
         
-        return np.array(b_pred_class), m_pred_proba
+        return b_pred_class,  normal_pred_proba_lst, patho_pred_proba_lst
 
 
 

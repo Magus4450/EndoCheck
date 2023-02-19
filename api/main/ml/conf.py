@@ -48,3 +48,20 @@ mapping = {
         'Reduced mucosal view': "Normal", 
         'Ulcer': "Pathological"
     }
+
+mapping_cls = {
+        0:"Normal", 
+        1:"Pathological", 
+        2:"Pathological", 
+        3:"Pathological", 
+        4:"Pathological", 
+        5:"Pathological", 
+        6:"Pathological", 
+        7:"Normal", 
+        8:"Pathological", 
+        9:"Normal", 
+        10:"Pathological", 
+        11:"Normal", 
+        12:"Normal", 
+        13:"Pathological"
+}

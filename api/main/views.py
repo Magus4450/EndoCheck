@@ -16,7 +16,7 @@ from . import serializers
 from .ml import preprocesing
 from .ml.data_loader import DataLoader
 from .ml.predictor import ResNetPredictor
-from .models import PatientInfo
+from .models import ModelOutput, PatientInfo
 
 
 @api_view(['GET'])
@@ -63,26 +63,42 @@ class PredictAPIView(generics.GenericAPIView):
         rnp = ResNetPredictor(
             model_weights_path=model_weight_path,
             data_loader=dl)
-        predicted_class, predicted_probas = rnp.predict()
+        predicted_class, normal_pred_proba_lst, patho_pred_proba_lst = rnp.predict()
         grad_path, overlayed_path = rnp.get_gradcam()
+        print(normal_pred_proba_lst)
+        for i in range(len(predicted_class)):
+
+            mo = ModelOutput.objects.create(
+                patient=patient_data,
+                predicted_class=predicted_class[i],
+                predicted_probas_normal=normal_pred_proba_lst[i],
+                predicted_probas_pathological = patho_pred_proba_lst[i],
+                file_number = i
+
+,
+            )
+            mo.save()
+
 
         base_path = settings.BASE_DIR
 
-        grad_path = grad_path.replace(base_path, '')
-        overlayed_path = overlayed_path.replace(base_path, '')
+        grad_path = grad_path.replace(str(base_path), '')
+        overlayed_path = overlayed_path.replace(str(base_path), '')
 
 
-
-        patient_data.predicted_class = predicted_class
-        patient_data.predicted_probas = predicted_probas
-        patient_data.grad_images = grad_path
-        patient_data.overlayed_images = overlayed_path
+ 
+        # patient_data.predicted_class = predicted_class
+        # patient_data.predicted_probas = predicted_probas
+        patient_data.grad_images = str(grad_path).replace('\\', '/')
+        patient_data.overlayed_images = str(overlayed_path).replace('\\', '/')
         patient_data.save()
 
         return Response({
             'patient_id': patient_id,
         }, 200)
 
+        
+        
 class PatientInfoAPIView(generics.GenericAPIView):
 
     serializer_class = serializers.PatientInfoSerializer
@@ -98,10 +114,35 @@ class PatientInfoAPIView(generics.GenericAPIView):
         patient_data = PatientInfo.objects.get(id=id)
         serializer = self.get_serializer(patient_data)
         out_data = serializer.data
-        preprocessed_file_path = patient_data.preprocessed_file_path
         host = request.get_host()
-        host_path = "/".join([host, preprocessed_file_path])
-        out_data['preprocessed_file_path'] = host_path
+
+        if patient_data.preprocessed_file_path:
+            host_preprocessed_path = "".join([host, patient_data.preprocessed_file_path])
+            out_data['preprocessed_file_path'] = host_preprocessed_path
+
+        if patient_data.grad_images:
+            host_grad_path = "".join([host, patient_data.grad_images])
+            out_data['grad_images'] = host_grad_path
+
+        if patient_data.overlayed_images:
+            host_overlayed_path = "".join([host, patient_data.overlayed_images])
+            out_data['overlayed_images'] = host_overlayed_path
+        
+        predict_info = ModelOutput.objects.filter(patient=patient_data)
+        
+      
+        predict_out = {}
+        for predict in predict_info:
+            data = serializers.ModelOutputSerializer(predict).data
+            predict_out[data['file_number']] = {
+                'predicted_class': data['predicted_class'],
+                'predicted_probas_normal': data['predicted_probas_normal'],
+                'predicted_probas_pathological': data['predicted_probas_pathological']
+            }
+
+
+        
+        out_data['output'] = predict_out
         return Response(out_data, 200)
 
 
@@ -123,7 +164,7 @@ class VideoToImageAPIView(generics.GenericAPIView):
 
        
        
-        patient_data.preprocessed_file_path = folder_path
+        patient_data.preprocessed_file_path = folder_path.replace('//', '/')
         patient_data.preprocessed_file_number = count
         patient_data.save()
         return Response(serializer.data, 200)

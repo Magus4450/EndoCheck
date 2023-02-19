@@ -1,21 +1,19 @@
 from rest_framework import serializers
 
-from .models import PatientInfo
+from .models import ModelOutput, PatientInfo
 
 
 class PatientInfoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PatientInfo
-        fields = ('id', 'first_name', 'last_name', 'patients_age', 'file_type', 'file', 'date', 'preprocessed_file_path', 'preprocessed_file_number', 'predicted_class', 'predicted_probas', 'grad_images')
+        fields = ('id', 'first_name', 'last_name', 'patients_age', 'file_type', 'file', 'date', 'preprocessed_file_path', 'preprocessed_file_number', 'grad_images')
         extra_kwargs = {
             'id': {'read_only': True},
             'file_type': {'read_only': True},
             'date': {'read_only': True},
             'preprocessed_file_path': {'read_only': True},
             'preprocessed_file_number': {'read_only': True},
-            'predicted_class': {'read_only': True},
-            'predicted_probas': {'read_only': True},
             'grad_images': {'read_only': True}
         }
 
@@ -114,4 +112,11 @@ class VideoCropSerializer(serializers.Serializer):
 
     
         
-        return super().validate(attrs)
+class ModelOutputSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ModelOutput
+        fields = ('patient', 'file_number', 'predicted_class', 'predicted_probas_normal', 'predicted_probas_pathological')
+    
+
+
