@@ -2,6 +2,7 @@ env
 __pycache__
 media
 db.sqlite3
+api/static/weights
 
 frontend/node_modules
 /.pnp
