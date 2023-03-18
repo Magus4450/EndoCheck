@@ -15,7 +15,7 @@ function App() {
           <React.StrictMode>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/output" element={<Output />} />
+              <Route path="/output/:id" element={<Output />} />
               {/* <Route path="/about" element={<About />} /> */}
             </Routes>
           </React.StrictMode>

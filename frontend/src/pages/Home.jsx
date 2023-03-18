@@ -40,7 +40,7 @@ const Home = () => {
     setCroppedFile(file);
   };
   return (
-    <div className="flex flex-col flex-1 justify-center">
+    <div className="flex flex-col justify-center mt-10">
       <div>
         <Steps activeStep={activeStep} />
         {activeStep === 0 && (

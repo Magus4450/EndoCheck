@@ -1,7 +1,7 @@
-const Bar = ({ percent, names, color }) => {
+const Bar = ({ percent, name, color }) => {
   return (
     <div className="mb-5 first:mt-5 text-gray-500">
-      <div className="text-sm ">Class Name</div>
+      <div className="text-sm ">{name}</div>
       <div className="flex items-center">
         <div className="w-full h-4 bg-gray-200 rounded-sm dark:bg-gray-700 ">
           <div

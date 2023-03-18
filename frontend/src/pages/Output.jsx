@@ -1,12 +1,27 @@
 import { useState } from "react";
+import { useQuery } from "react-query";
+import { useParams } from "react-router-dom";
 import raw from "../assets/4.jpg";
 import grad from "../assets/4g.png";
-import Image from "../components/Image";
-import InfoBar from "../components/InfoBar";
+import SlideShow from "../components/SlideShow";
+import { patientOutput } from "../services/patientOutput";
 const Output = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [images, setImages] = useState([raw, grad]);
+  const { id } = useParams();
 
+  const { data, isLoading, isError } = useQuery(
+    ["patientOutput", id],
+    () => patientOutput(id),
+    {
+      refetchOnWindowFocus: false,
+    }
+  );
+  // const [loaded, setLoaded] = useState(false);
+
+  if (data) {
+    console.log(data);
+  }
   const handleRightButtonClick = () => {
     const newImages = [
       "https://picsum.photos/id/240/200/300",
@@ -17,43 +32,17 @@ const Output = () => {
   };
 
   return (
-    <div className="flex flex-row justify-center items-center w-full mx-auto max-w-3xl mt-20">
-      <div className="w-4/6 m-4 mr-5">
-        <div className="grid grid-cols-2 gap-1 border shadow">
-          {images.map((image, index) => (
-            <Image
-              key={index}
-              image={image}
-              isActive={index === activeIndex}
-              onClick={() => setActiveIndex(index)}
-            />
-          ))}
-        </div>
-        <div>
-          {/* <ArrowLeftCircleIcon /> */}
-          {/* <ArrowRightCircleIcon /> */}
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
-            onClick={handleRightButtonClick}
-          >
-            Apple
-          </button>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
-            onClick={handleRightButtonClick}
-          >
-            Change Images
-          </button>
-        </div>
-      </div>
-
-      <div className="w-2/6 shadow p-5 m-4 ml-5 rounded-lg">
-        <div className="block text-lg font-medium text-gray-700 text-center">
-          Classes
-        </div>
-        <InfoBar percentages={[78, 10, 4, 4, 4, 4, 4, 4, 4]} />
-      </div>
-    </div>
+    <>
+      {!isLoading && (
+        <SlideShow
+          nImg={data["preprocessed_file_number"] || 0}
+          imgPath={data["preprocessed_file_path"]}
+          gradPath={data["grad_images"]}
+          overPath={data["overlayed_images"]}
+          output={data["output"]}
+        />
+      )}
+    </>
   );
 };
 
