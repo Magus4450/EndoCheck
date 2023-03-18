@@ -1,5 +1,7 @@
 import os
+import random
 import shutil
+import string
 import subprocess
 from ast import literal_eval
 from wsgiref.util import FileWrapper
@@ -88,6 +90,21 @@ class PredictAPIView(generics.GenericAPIView):
         patient_data.grad_images = str(grad_path).replace('\\', '/')
         patient_data.overlayed_images = str(overlayed_path).replace('\\', '/')
         patient_data.save()
+
+        if patient_data.file_type == 'image':
+            preprocessed_base_path = settings.PREPROCESSED_PATH
+            
+            # Get random 10 length string
+            rand  = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 10))
+            folder_path = os.path.join(preprocessed_base_path, rand)
+            os.mkdir(folder_path)
+            file_path = os.path.join(folder_path, f'0.{settings.IMAGE_FORMAT}')
+            shutil.copy(patient_data.file.path, file_path)
+
+            patient_data.preprocessed_file_path = folder_path
+            patient_data.save()
+            
+
 
         return Response({
             'patient_id': patient_id,
