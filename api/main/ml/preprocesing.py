@@ -34,7 +34,7 @@ def convert_video_to_image(video_path:str):
             success, image = vidcap.read()
             count += 1
             continue
-        path = os.path.join(preprocess_file_path, f"{frame}.jpg")
+        path = os.path.join(preprocess_file_path, f"{frame}.{settings.IMAGE_FORMAT}")
         frame += 1
         cv2.imwrite(path, image)     # save frame as JPEG file
         success, image = vidcap.read()

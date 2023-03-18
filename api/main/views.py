@@ -113,7 +113,7 @@ class PatientInfoAPIView(generics.GenericAPIView):
         host = request.get_host()
 
         if patient_data.preprocessed_file_path:
-            host_preprocessed_path = "".join([host, patient_data.preprocessed_file_path])
+            host_preprocessed_path = "/".join([host, patient_data.preprocessed_file_path])
             out_data['preprocessed_file_path'] = host_preprocessed_path
 
         if patient_data.grad_images:
@@ -132,8 +132,8 @@ class PatientInfoAPIView(generics.GenericAPIView):
             data = serializers.ModelOutputSerializer(predict).data
             predict_out[data['file_number']] = {
                 'predicted_class': data['predicted_class'],
-                'predicted_probas_normal': data['predicted_probas_normal'],
-                'predicted_probas_pathological': data['predicted_probas_pathological']
+                'predicted_probas_normal': literal_eval(data['predicted_probas_normal']),
+                'predicted_probas_pathological': literal_eval(data['predicted_probas_pathological'])
             }
 
 
@@ -179,11 +179,9 @@ class ImageResizeAPIView(generics.GenericAPIView):
 
         patient_data = PatientInfo.objects.get(id=patient_id)
         
-        # print all data of query
-        print(patient_data.__dict__)
-
+     
         file_type = patient_data.file_type
-
+        print(file_type)
         if file_type == 'image':
             file_path = patient_data.file.path
             preprocesing.convert_to_size(file_path)
@@ -192,7 +190,7 @@ class ImageResizeAPIView(generics.GenericAPIView):
             num_files = patient_data.preprocessed_file_number
 
             for i in range(num_files):
-                file_name = f'{i}.jpg'
+                file_name = f'{i}.{settings.IMAGE_FORMAT}'
                 file_path = os.path.join(folder_path, file_name)
                 preprocesing.convert_to_size(file_path)
        
