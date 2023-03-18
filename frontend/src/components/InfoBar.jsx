@@ -40,14 +40,22 @@ const InfoBar = ({ output }) => {
     var currentProbas = output["predicted_probas_normal"];
     var currentClass = normalNames;
   }
+
+  // Get indices of top 4 values
+  const indices = currentProbas
+    .map((x, i) => [x, i])
+    .sort((a, b) => b[0] - a[0])
+    .slice(0, 4)
+    .map((x) => x[1]);
+
   return (
     <div>
       {/* Map */}
 
-      {currentProbas.map((proba, index) => (
+      {indices.map((index) => (
         <Bar
           key={index}
-          percent={proba}
+          percent={currentProbas[index]}
           color={colors[index]}
           name={currentClass[index]}
         />

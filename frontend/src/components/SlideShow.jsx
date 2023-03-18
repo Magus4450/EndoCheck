@@ -13,17 +13,19 @@ const SlideShow = ({ nImg, imgPath, gradPath, overPath, output }) => {
     <div className="flex flex-row justify-center items-center w-full mx-auto max-w-3xl mt-20">
       <div className="flex flex-col items-center mt-10">
         <div className="grid grid-cols-2 gap-1 border shadow">
-          {/* <Image
+          <Image
             //   key={index}
             image={`${imgPath.toString()}/${curImg}.png`}
             isActive={true}
             //   onClick={() => setActiveIndex(index)}
-          /> */}
+          />
 
           <Image
             //   key={index}
             image={`${gradPath}/${curImg}.png`}
+            altImage={`${overPath}/${curImg}.png`}
             isActive={true}
+            isOverlayable={true}
             //   onClick={() => setActiveIndex(index)}
           />
         </div>

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "react-image-crop/dist/ReactCrop.css";
 import { useMutation } from "react-query";
+import { useNavigate } from "react-router-dom";
 import "../App.css";
 import { imagesResize } from "../services/imagesResize";
 import { patientRegister } from "../services/patientRegister";
@@ -27,6 +28,7 @@ const Predict = ({
   const [predicting, setPredicting] = useState(false);
   const [predictStatus, setPredictStatus] = useState(0);
 
+  const navigate = useNavigate();
   const { mutate: mutatePatientInfo, statusPatientInfo } = useMutation(
     patientRegister,
     {
@@ -68,6 +70,7 @@ const Predict = ({
   const mutatePredict = useMutation(predict, {
     onSuccess: (data) => {
       console.log(data.data);
+      navigate(`/output/${data.data["patient_id"]}`);
     },
   });
   const backButtonHandler = () => {
