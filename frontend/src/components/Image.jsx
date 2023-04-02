@@ -20,30 +20,22 @@ const Image = ({
     >
       {isOverlayable &&
         (overlayClicked ? (
-          <EyeIcon
-            className="absolute top-0 right-0 w-8 h-8 m-2 text-black   cursor-pointer hover:text-black transition-all duration-300 ease-in-out"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              setOverlayClicked(!overlayClicked);
-            }}
-          />
+          <EyeIcon className="absolute top-0 right-0 w-8 h-8 m-2 text-gray-300" />
         ) : (
-          <EyeSlashIcon
-            className="absolute top-0 right-0 w-8 h-8 m-2 text-black   cursor-pointer hover:text-black transition-all duration-300 ease-in-out"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-
-              setOverlayClicked(!overlayClicked);
-            }}
-          />
+          <EyeSlashIcon className="absolute top-0 right-0 w-8 h-8 m-2 text-gray-300" />
         ))}
 
       <img
         src={!overlayClicked ? `http://${image}` : `http://${altImage}`}
         alt=""
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover cursor-pointer"
+        style={{ cursor: isOverlayable ? "pointer" : "default" }}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+
+          setOverlayClicked(!overlayClicked);
+        }}
       />
     </div>
   );

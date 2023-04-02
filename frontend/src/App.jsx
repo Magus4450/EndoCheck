@@ -5,6 +5,7 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Output from "./pages/Output";
+import Results from "./pages/Results";
 const queryClient = new QueryClient();
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/output/:id" element={<Output />} />
+              <Route path="/results" element={<Results />} />
               {/* <Route path="/about" element={<About />} /> */}
             </Routes>
           </React.StrictMode>
