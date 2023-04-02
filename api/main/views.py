@@ -102,6 +102,8 @@ class PredictAPIView(generics.GenericAPIView):
             shutil.copy(patient_data.file.path, file_path)
 
             patient_data.preprocessed_file_path = folder_path
+
+            patient_data.preprocessed_file_number = 1
             patient_data.save()
             
 

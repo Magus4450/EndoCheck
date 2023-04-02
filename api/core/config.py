@@ -20,7 +20,7 @@ IMAGE_FORMAT = "png"
 # Number of frames to extract from second of video
 FRAME_PER_SEC = 1
 
-ML_MODEL_WEIGHT = "resnet_multi_pre_100_moretransforms.pth"
+ML_MODEL_WEIGHT = "resnet_multi_pre_less_fc_5_moretransforms.pth"
 ML_MODEL_PATH = f"{STATIC_ROOT}/weights/{ML_MODEL_WEIGHT}"
 ML_IMG_SIZE = (336, 336)
 ML_DEVICE = "cpu" # "cuda"

@@ -15,7 +15,7 @@ from tqdm import tqdm
 from . import conf as cfg
 from .data_loader import DataLoader
 from .grad_cam import GradCamModel
-from .res_net_pretrained import ResNet50Pretrained
+from .res_net_pretrained import ResNet50Pretrained, ResNet50PretrainedLessFC
 from .resnet import ResNet50
 
 # Do not use GUI backend
@@ -49,10 +49,8 @@ class ResNetPredictor:
 
     def _load_models(self, model_weights_path):
 
-        r50 = ResNet50Pretrained(n_classes=14).to(self.device)
-        # for name, param in r50.named_parameters():
-        #     if 'layer1' in name or 'layer2' in name or 'conv1' in name or 'bn1' in name:
-        #         param.requires_grad=False
+        r50 = ResNet50PretrainedLessFC(n_classes=14).to(self.device)
+        
         r50.load_state_dict(torch.load(model_weights_path, map_location=self.device))
 
         grad_cam = GradCamModel(r50)
