@@ -10,6 +10,7 @@ class PatientInfo(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     patients_age = models.IntegerField()
+    other_details = models.CharField(max_length=200, blank=True, null=True)
     file_type = models.CharField(max_length=100, choices=CHOICES)
     file = models.FileField(upload_to='raw/')
     date = models.DateTimeField(auto_now_add=True)

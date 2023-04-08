@@ -7,7 +7,7 @@ class PatientInfoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PatientInfo
-        fields = ('id', 'first_name', 'last_name', 'patients_age', 'file_type', 'file', 'date', 'preprocessed_file_path', 'preprocessed_file_number', 'grad_images')
+        fields = ('id', 'first_name', 'last_name', 'patients_age', 'other_details','file_type', 'file', 'date', 'preprocessed_file_path', 'preprocessed_file_number', 'grad_images')
         extra_kwargs = {
             'id': {'read_only': True},
             'file_type': {'read_only': True},
@@ -26,6 +26,7 @@ class PatientInfoSerializer(serializers.ModelSerializer):
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             patients_age=validated_data['patients_age'],
+            other_details=validated_data['other_details'],
             file_type=validated_data['file_type'],
             file=f
 
