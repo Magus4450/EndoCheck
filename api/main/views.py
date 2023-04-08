@@ -164,6 +164,17 @@ class PatientInfoAPIView(generics.GenericAPIView):
         return Response(out_data, 200)
 
 
+class PatientListAPIView(generics.ListAPIView):
+    serializer_class = serializers.PatientInfoSerializer
+    def get_queryset(self):
+        return PatientInfo.objects.all()
+
+class PatientDestroyAPIView(generics.DestroyAPIView):
+    serializer_class = serializers.PatientInfoSerializer
+    lookup_field = 'id'
+    def get_queryset(self):
+        return PatientInfo.objects.all()
+
 class VideoToImageAPIView(generics.GenericAPIView):
 
     serializer_class = serializers.VideoToImageSerializer

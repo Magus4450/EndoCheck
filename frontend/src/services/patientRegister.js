@@ -8,8 +8,8 @@ export const patientRegister = async (data) => {
   // CHnage filename to a.jpg
   // file.name = "a.jpg";
   formData.append("file", data.file);
-  formData.append("name", data.firstName);
-  formData.append("detail", data.lastName);
+  formData.append("name", data.name);
+  formData.append("detail", data.detail);
   formData.append("patients_age", data.age);
   const response = await axiosInstance.post("/patient-info", formData, {
     headers: {

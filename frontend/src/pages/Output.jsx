@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import raw from "../assets/4.jpg";
 import grad from "../assets/4g.png";
 import SlideShow from "../components/SlideShow";
+import Spinner from "../components/Spinner";
 import { patientOutput } from "../services/patientOutput";
 const Output = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -17,30 +18,32 @@ const Output = () => {
       refetchOnWindowFocus: false,
     }
   );
-  // const [loaded, setLoaded] = useState(false);
 
-  if (data) {
+  if (isLoading) {
+    return <Spinner />;
+  } else {
     console.log(data);
   }
-  const handleRightButtonClick = () => {
-    const newImages = [
-      "https://picsum.photos/id/240/200/300",
-      "https://picsum.photos/id/241/200/300",
-    ];
-    setImages(newImages);
-    setActiveIndex(0); // reset the active index to the first square
-  };
 
   return (
     <>
       {!isLoading && (
-        <SlideShow
-          nImg={data["preprocessed_file_number"] || 0}
-          imgPath={data["preprocessed_file_path"]}
-          gradPath={data["grad_images"]}
-          overPath={data["overlayed_images"]}
-          output={data["output"]}
-        />
+        <>
+          <div className="flex flex-row justify-center items-center w-full mx-auto max-w-3xl mt-10">
+            <div className="flex flex-col items-center mt-5">
+              <h1 className="text-3xl font-bold text-gray-800">
+                {data["name"]}
+              </h1>
+            </div>
+          </div>
+          <SlideShow
+            nImg={data["preprocessed_file_number"] || 0}
+            imgPath={data["preprocessed_file_path"]}
+            gradPath={data["grad_images"]}
+            overPath={data["overlayed_images"]}
+            output={data["output"]}
+          />
+        </>
       )}
     </>
   );
