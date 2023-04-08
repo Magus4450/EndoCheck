@@ -6,8 +6,8 @@ import Steps from "../components/Steps";
 const Home = () => {
   const [activeStep, setActiveStep] = useState(0);
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [name, setname] = useState("");
+  const [detail, setdetail] = useState("");
   const [age, setAge] = useState("");
   const [file, setFile] = useState(null);
   const [thumbnail, setThumbnail] = useState(null);
@@ -19,15 +19,9 @@ const Home = () => {
 
   const [patientData, setPatientData] = useState({});
 
-  const detailsReceiveHandler = ({
-    firstName,
-    lastName,
-    age,
-    file,
-    isVideo,
-  }) => {
-    setFirstName(firstName);
-    setLastName(lastName);
+  const detailsReceiveHandler = ({ name, detail, age, file, isVideo }) => {
+    setname(name);
+    setdetail(detail);
     setAge(age);
     setFile(file);
     setIsVideo(isVideo);
@@ -48,7 +42,7 @@ const Home = () => {
             onReceiveDetails={detailsReceiveHandler}
             activeStep={activeStep}
             setActiveStep={setActiveStep}
-            data={{ firstName, lastName, age, file, isVideo }}
+            data={{ name, detail, age, file, isVideo }}
           />
         )}
         {activeStep === 1 && (
@@ -68,7 +62,7 @@ const Home = () => {
             thumbnail={thumbnail}
             activeStep={activeStep}
             setActiveStep={setActiveStep}
-            data={{ firstName, lastName, age, isVideo }}
+            data={{ name, detail, age, isVideo }}
             patientData={patientData}
             setPatientData={setPatientData}
           />

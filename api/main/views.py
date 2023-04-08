@@ -66,7 +66,7 @@ class PredictAPIView(generics.GenericAPIView):
             data_loader=dl)
         predicted_class, normal_pred_proba_lst, patho_pred_proba_lst = rnp.predict()
         grad_path, overlayed_path = rnp.get_gradcam()
-        print(normal_pred_proba_lst)
+        # print(normal_pred_proba_lst)
         for i in range(len(predicted_class)):
 
             mo = ModelOutput.objects.create(
@@ -96,7 +96,10 @@ class PredictAPIView(generics.GenericAPIView):
             
             # Get random 10 length string
             rand  = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 10))
-            folder_path = os.path.join(preprocessed_base_path, rand)
+            folder_path = preprocessed_base_path + '//' + rand
+            if not os.path.exists(preprocessed_base_path):
+                os.mkdir(preprocessed_base_path)
+            
             os.mkdir(folder_path)
             file_path = os.path.join(folder_path, f'0.{settings.IMAGE_FORMAT}')
             shutil.copy(patient_data.file.path, file_path)
@@ -200,7 +203,7 @@ class ImageResizeAPIView(generics.GenericAPIView):
         
      
         file_type = patient_data.file_type
-        print(file_type)
+        # print(file_type)
         if file_type == 'image':
             file_path = patient_data.file.path
             preprocesing.convert_to_size(file_path)

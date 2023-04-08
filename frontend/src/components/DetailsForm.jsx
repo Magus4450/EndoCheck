@@ -6,18 +6,18 @@ export default function DetailsForm({
   setActiveStep,
   data,
 }) {
-  const firstNameRef = useRef(null);
-  const lastNameRef = useRef(null);
+  const nameRef = useRef(null);
+  const detailRef = useRef(null);
   const ageRef = useRef(null);
   const fileRef = useRef(null);
 
-  const [firstName, setFirstName] = useState(data.firstName);
-  const [lastName, setLastName] = useState(data.lastName);
+  const [name, setname] = useState(data.name);
+  const [detail, setdetail] = useState(data.detail);
   const [age, setAge] = useState(data.age);
   const [isVideo, setIsVideo] = useState(data.isVideo);
 
-  const [firstNameError, setFirstNameError] = useState(false);
-  const [lastNameError, setLastNameError] = useState(false);
+  const [nameError, setnameError] = useState(false);
+  const [detailError, setdetailError] = useState(false);
   const [ageError, setAgeError] = useState(false);
   const [fileError, setFileError] = useState(false);
 
@@ -31,17 +31,17 @@ export default function DetailsForm({
     e.preventDefault();
 
     let formValid = true;
-    const firstName = firstNameRef.current.value;
-    const lastName = lastNameRef.current.value;
+    const name = nameRef.current.value;
+    const detail = detailRef.current.value;
     const age = ageRef.current.value;
 
-    if (firstName == "") {
-      setFirstNameError(true);
+    if (name == "") {
+      setnameError(true);
       formValid = false;
     }
 
-    if (lastName == "") {
-      setLastNameError(true);
+    if (detail == "") {
+      setdetailError(true);
       formValid = false;
     }
     if (age < 0 || age > 120 || age == "") {
@@ -54,8 +54,8 @@ export default function DetailsForm({
       formValid = false;
     }
     const details = {
-      firstName: firstName,
-      lastName: lastName,
+      name: name,
+      detail: detail,
       age: age,
       file: uploadedMedia,
       isVideo: isVideo,
@@ -105,23 +105,13 @@ export default function DetailsForm({
             <div className="bg-white px-4 py-5 sm:p-6">
               <div className="grid grid-cols-6 gap-6">
                 <InputField
-                  labelName={"First Name"}
+                  labelName={"Full Name"}
                   type={"text"}
-                  value={firstName}
-                  setValue={setFirstName}
-                  ref={firstNameRef}
-                  error={firstNameError}
-                  setError={setFirstNameError}
-                />
-
-                <InputField
-                  labelName={"Last Name"}
-                  type={"text"}
-                  value={lastName}
-                  setValue={setLastName}
-                  ref={lastNameRef}
-                  error={lastNameError}
-                  setError={setLastNameError}
+                  value={name}
+                  setValue={setname}
+                  ref={nameRef}
+                  error={nameError}
+                  setError={setnameError}
                 />
                 <InputField
                   labelName={"Age"}
@@ -131,6 +121,15 @@ export default function DetailsForm({
                   ref={ageRef}
                   error={ageError}
                   setError={setAgeError}
+                />
+                <InputField
+                  labelName={"Other Details"}
+                  type={"text"}
+                  value={detail}
+                  setValue={setdetail}
+                  ref={detailRef}
+                  error={detailError}
+                  setError={setdetailError}
                 />
 
                 {/* Endoscopic Data -------------------------------------- */}

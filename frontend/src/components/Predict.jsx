@@ -20,8 +20,8 @@ const Predict = ({
   patientData,
   setPatientData,
 }) => {
-  const firstName = data.firstName;
-  const lastName = data.lastName;
+  const name = data.name;
+  const detail = data.detail;
   const age = data.age;
   const isVideo = data.isVideo;
   const [patientId, setPatientId] = useState(null);
@@ -82,8 +82,8 @@ const Predict = ({
 
     // Send file to image to send to backend
     mutatePatientInfo({
-      firstName,
-      lastName,
+      name,
+      detail,
       age,
       file,
     });
@@ -98,22 +98,16 @@ const Predict = ({
                 <div className="bg-white px-4 py-5 sm:p-6">
                   <div className="grid grid-cols-6 gap-6">
                     <InputField
-                      labelName="First Name"
+                      labelName="Full Name"
                       type={"text"}
-                      value={firstName}
+                      value={name}
                       disabled={true}
                     />
+                    <InputField labelName={"Age"} type={"number"} value={age} />
                     <InputField
-                      labelName="Last Name"
+                      labelName={"Other Details"}
                       type={"text"}
-                      value={lastName}
-                      disabled={true}
-                    />
-                    <InputField
-                      labelName="Age"
-                      type={"number"}
-                      value={age}
-                      disabled={true}
+                      value={detail}
                     />
                   </div>
                 </div>

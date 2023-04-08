@@ -7,7 +7,7 @@ class PatientInfoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PatientInfo
-        fields = ('id', 'first_name', 'last_name', 'patients_age', 'other_details','file_type', 'file', 'date', 'preprocessed_file_path', 'preprocessed_file_number', 'grad_images')
+        fields = ('id', 'name', 'patients_age', 'detail','file_type', 'file', 'date', 'preprocessed_file_path', 'preprocessed_file_number', 'grad_images')
         extra_kwargs = {
             'id': {'read_only': True},
             'file_type': {'read_only': True},
@@ -23,10 +23,9 @@ class PatientInfoSerializer(serializers.ModelSerializer):
         if validated_data['extension'] not in f.name:
             validated_data['file'].name = f.name + validated_data['extension']
         p_info = PatientInfo.objects.create(
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
+            name=validated_data['name'],
             patients_age=validated_data['patients_age'],
-            other_details=validated_data['other_details'],
+            detail=validated_data['detail'],
             file_type=validated_data['file_type'],
             file=f
 
