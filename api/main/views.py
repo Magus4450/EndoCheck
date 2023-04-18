@@ -4,14 +4,9 @@ import shutil
 import string
 import subprocess
 from ast import literal_eval
-from wsgiref.util import FileWrapper
 
 from django.conf import settings
-from django.core.files.storage import FileSystemStorage
-from django.http import FileResponse, HttpResponse
-from django.templatetags.static import static
 from rest_framework import generics
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from . import serializers
@@ -20,31 +15,6 @@ from .ml.data_loader import DataLoader
 from .ml.predictor import ResNetPredictor
 from .models import ModelOutput, PatientInfo
 
-
-@api_view(['GET'])
-def ping(request):
-    return Response({'message': 'pong'}, 200)
-
-@api_view(['GET'])
-def test(request):
-    dl = DataLoader('media/preprocessed/2.mp4', batch_size = 32, is_folder=True)
-    return Response({'message': 'test'}, 200)
-
-@api_view(['GET'])
-def test_model(request):
-    model_weight_path = 'static/weights/resnet_multi_100_dropout1.pth'
-    dl = DataLoader('media/preprocessed/test2.mp4', batch_size = 32, is_folder=True)
-
-    rnp = ResNetPredictor(
-        model_weights_path=model_weight_path,
-        data_loader=dl)
-    rnp._get_gradcam()
-    
-
-    return Response({
-        'pred_class': '1',
-        'pred_proba': 'pred_proba'
-    }, 200)
 
 class PredictAPIView(generics.GenericAPIView):
     serializer_class = serializers.PredictSerializer

@@ -5,15 +5,12 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('ping', views.ping, name='ping'),
     path('patient-list', views.PatientListAPIView.as_view(), name='patient-list'),
     path('patient-info', views.PatientInfoAPIView.as_view(), name='patient-info'),
     path('patient-info/<int:id>', views.PatientInfoAPIView.as_view(), name='patient-info-get'),
     path('patient-destroy/<int:id>', views.PatientDestroyAPIView.as_view(), name='patient-destroy'),
     path('video-to-image', views.VideoToImageAPIView.as_view(), name='video-to-image'),
     path('resize-images', views.ImageResizeAPIView.as_view(), name='resize-images'),
-    path('test', views.test, name='test'),
-    path('test-model', views.test_model, name='test_model'),
     path('predict', views.PredictAPIView.as_view(), name='predict'),
     path('crop', views.VideoCropAPIView.as_view(), name='crop'),
 ]

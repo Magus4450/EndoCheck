@@ -18,7 +18,7 @@ TEMP_PATH = f"{MEDIA_ROOT}/tmp"
 IMAGE_FORMAT = "png"
 
 # Number of frames to extract from second of video
-FRAME_PER_SEC = 1
+FRAME_PER_SEC = 5
 
 ML_MODEL_WEIGHT = "resnet_multi_pre_less_fc_5_moretransforms.pth"
 ML_MODEL_PATH = f"{STATIC_ROOT}/weights/{ML_MODEL_WEIGHT}"

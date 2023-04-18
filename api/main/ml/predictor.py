@@ -1,9 +1,9 @@
 
 import os
+from copy import deepcopy
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as nnf
@@ -59,7 +59,7 @@ class ResNetPredictor:
     
     def _get_one_gradcam(self, image):
         print(f"GC: Setting grad model to eval")
-        print(f"GC: image:{image.shape} image-max:{image.max()}")
+        # print(f"GC: image:{image.shape} image-max:{image.max()}")
         self.grad_model.eval()
         out, acts = self.grad_model(image)
         acts = acts.detach().cpu()
@@ -77,17 +77,17 @@ class ResNetPredictor:
             acts[:,i,:,:] += pooled_grads[i]  
             
         heatmap_j = torch.mean(acts, dim = 1).squeeze()
-        print(f"GC: heatmap_j:{heatmap_j.shape} heatmap_j-max:{heatmap_j.max()}")
+        # print(f"GC: heatmap_j:{heatmap_j.shape} heatmap_j-max:{heatmap_j.max()}")
         heatmap_j_max = heatmap_j.max(axis = 0)[0]
         heatmap_j /= heatmap_j_max
-        print(f"GC: heatmap_j:{heatmap_j.shape} heatmap_j-max:{heatmap_j.max()}")
+        # print(f"GC: heatmap_j:{heatmap_j.shape} heatmap_j-max:{heatmap_j.max()}")
         heatmap_j = resize(heatmap_j.cpu().numpy(),settings.ML_IMG_SIZE,preserve_range=True)
-        print(f"GC: heatmap_j:{heatmap_j.shape} heatmap_j-max:{heatmap_j.max()}")
+        # print(f"GC: heatmap_j:{heatmap_j.shape} heatmap_j-max:{heatmap_j.max()}")
         heatmap_j = gaussian_filter(heatmap_j, sigma=10)
         cmap = mpl.cm.get_cmap('turbo',256)
         heatmap_j2 = cmap(heatmap_j,alpha = 1) 
         heatmap_j3 = cmap(heatmap_j, alpha=0.2)
-        print(heatmap_j2.shape)
+        # print(heatmap_j2.shape)
         # print(type(heatmap_j)) 
         # print(type(heatmap_j2))
         
@@ -103,7 +103,9 @@ class ResNetPredictor:
         print('GC: Generating GradCam images')
 
         print("GC: Configuring base paths")
-        base_name = os.path.basename(self.data_loader.data_path)
+
+        data_loader = deepcopy(self.data_loader)
+        base_name = os.path.basename(data_loader.data_path)
         grad_out_base_path = os.path.join(self.grad_cam_path, base_name)
         overlayed_out_base_path = os.path.join(self.overlayed_img_path, base_name)
         if not os.path.exists(grad_out_base_path):
@@ -112,8 +114,7 @@ class ResNetPredictor:
             os.mkdir(overlayed_out_base_path)
         
         print("GC: Looping through images required Grad-CAMs")
-        for i ,image in enumerate(self.data_loader(for_grad=True)):
-            print(f"GC: i:{i} image:{image.shape} image-max:{image.max()}")
+        for i ,image in enumerate(data_loader(for_grad=True)):
             grad_final_path = os.path.join(grad_out_base_path, f'{i}.{settings.IMAGE_FORMAT}')
             overlayed_final_path = os.path.join(overlayed_out_base_path, f'{i}.{settings.IMAGE_FORMAT}')
             print(f"GC: Getting {i+1}th gradcam")
@@ -141,15 +142,15 @@ class ResNetPredictor:
         plt.close()
 
     def _save_overlayed_image(self, img, overlay, path):
-        print("Img", img.shape)
-        print("Overlay", overlay.shape)
+        # print("Img", img.shape)
+        # print("Overlay", overlay.shape)
         px = 1/plt.rcParams['figure.dpi']  # pixel in inches
         fig = plt.figure(figsize = (291*px,291*px))
         ax = fig.add_subplot(111)
         # cmap = mpl.cm.get_cmap('jet',256)
         # overlay = cmap(overlay,alpha = 0.2)
-        print("Img", img.shape)
-        print("Overlay", overlay.shape)
+        # print("Img", img.shape)
+        # print("Overlay", overlay.shape)
         ax.imshow(img)
         ax.imshow(overlay)
         plt.axis('off')
@@ -162,15 +163,16 @@ class ResNetPredictor:
         self.model.eval()
         pred_proba_lst = []
         pred_class_lst =  []
+        data_loader = deepcopy(self.data_loader)
         # Increase tqdm by batch size each step
-        for image in tqdm(self.data_loader, total=len(self.data_loader)//self.data_loader.batch_size):
+        for image in tqdm(data_loader, total=len(data_loader)//data_loader.batch_size):
             
             image = image.to(self.device)
             cur_batch_size = image.shape[0]
 
             out = self.model(image)
             proba = nnf.softmax(out, dim=1)
-            print(proba)
+            # print(proba)
 
             
 

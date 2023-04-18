@@ -22,8 +22,9 @@ class DataLoader:
         if self.is_folder:
             batch_size = 0
             batch = None
-            for image in os.listdir(self.data_path):
-                image_path = os.path.join(self.data_path, image)
+            for i, image in enumerate(os.listdir(self.data_path)):
+                image_path = os.path.join(self.data_path, f"{i}.{settings.IMAGE_FORMAT}")
+                # print(image_path)
                 image = imread(image_path)
                 image = self.transform(image)
                 image = image.unsqueeze(0)
