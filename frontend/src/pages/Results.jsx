@@ -1,4 +1,9 @@
-import { PhotoIcon, VideoCameraIcon } from "@heroicons/react/24/outline";
+import {
+  ClipboardDocumentIcon,
+  PhotoIcon,
+  VideoCameraIcon,
+} from "@heroicons/react/24/outline";
+import { Tooltip } from "@material-tailwind/react";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
@@ -43,6 +48,9 @@ const Results = () => {
                     Age
                   </th>
                   <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
+                    Details
+                  </th>
+                  <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
                     Entry Date
                   </th>
                   <th className="whitespace-nowrap px-4 py-2 text-left font-medium text-gray-900">
@@ -60,6 +68,11 @@ const Results = () => {
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {patient.patients_age}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2 text-gray-700">
+                      <Tooltip content={patient.detail} placement="bottom">
+                        <ClipboardDocumentIcon className="w-7 h-7" />
+                      </Tooltip>
                     </td>
                     <td className="whitespace-nowrap px-4 py-2 text-gray-700">
                       {patient.date.slice(0, 19).replace("T", " ")}
